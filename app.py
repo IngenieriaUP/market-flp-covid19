@@ -24,22 +24,22 @@ st.title('Análisis de ubicación de mercados itinerantes')
 st.write('''
 Desde el inicio del Estado de Emergencia en nuestro país los mercados han recibido un gran volumen de personas.
 Esto ha generado que se conviertan en uno de los principales focos de contagio para la población. Por este motivo 
-**la Municipalidad de Lima propuso la implementacion de mercados itinerantes para aumentar la oferta de mercados y 
+**la Municipalidad de Lima propuso la implementación de mercados itinerantes para aumentar la oferta de mercados y 
 reducir la aglomeración de personas.**
 ''')
 
 # como sabnemos que la ubicacion es opmitima, de que depende donde ubicarlos? por que ubicarlos en un determinado espacio?
 st.write('''
-En este sentido, **el presente análisis tiene como objetivo obtener la localizacion óptima de los mercados itinerantes.**
+En este sentido, **el presente análisis tiene como objetivo hallar la localizacion óptima de los mercados itinerantes.**
 Pero antes de lograr este objetivo debemos hacer algunas preguntas: **¿Cómo determinamos si una ubicación es óptima?** 
-¿De qué depende esta ubicacion? ¿Por qué una ubicacion podría ser mejor que otra? A continuación responderemos estas preguntas.
+¿De qué depende esta ubicación? ¿Por qué una ubicacion podría ser mejor que otra? A continuación responderemos estas preguntas.
 ''')
 
 # 1. mejore la accesibilidad a los mercados (medimos con tiempo y distancia de viaje)
 # 2. considerando la distancia social debemos incluir en el analisis de la densidad poblacional en la zona geografica
 st.write('''
-Luego de realizar un análisis de datos, tanto desde el punto de vista académico como en operativo de la 
-Municipalidad, se llegó a la conclusión de que se debían considerar principalmente las siguientes variables: 
+Luego de realizar un análisis de datos con el equipo multidisciplinario de la Municipalidad Lima y la Universidad del Pacífico 
+se llegó a la conclusión de que se debían considerar principalmente las siguientes variables: 
 
 - Accesibilidad del mercado
 - Densidad poblacional alrededor del mercado
@@ -47,7 +47,7 @@ Municipalidad, se llegó a la conclusión de que se debían considerar principal
 - Flujo de personas en el mercado (por hora)
 - Posibles lugares para colocar los mercados itinerantes (Por ejemplo parques y lozas deportivas)
 
-Esto significa que la situacion ideal sería que 
+Esto significa que la situación ideal sería que 
 **la duración y distancia de viaje caminando hacia el mercado sea la mínima posible.**
 Por ejemplo podemos ver cómo varía la duración del viaje hacia el mercado 
 más cercano en el distrito de San Juan de Lurigancho:
@@ -75,11 +75,12 @@ fig_durations = px.choropleth_mapbox(
 )
 fig_durations.update_layout(mapbox_bearing=-50, 
                   margin={"r":0,"t":0,"l":0,"b":0})
+
 st.plotly_chart(fig_durations, use_container_width=True)
 
 st.write('''
 Además, **la cantidad de mercados** ubicados en una zona geografica **debería ser acorde a la densidad poblacional.**
-Asimismo, **el flujo de personas** en el mercado debe estar **restringido por el aforo** del mismo para 
+Asimismo, **el flujo de personas** en el mercado debe estar **restringido por el aforo** para 
 que sea posible **mantener la distancia social.** Por ejemplo podemos ver la densidad poblacional dentro del 
 distrito de San Juan de Lurigancho:
 ''')
@@ -107,8 +108,8 @@ st.plotly_chart(fig_population, use_container_width=True)
 
 # Para solucionar este problema de ubicación se ha usado un Modelo de localización óptima instalaciones
 st.write('''
-Por otro lado **los datos de flujos de personas se podrian obtener a partir de fuentes privadas como empresas 
-de telecomunicaciones o especificamente Google**. Sin embargo aún no tenemos acceso esa información.
+Por otro lado **los datos de flujos de personas se podrían obtener a partir de fuentes privadas como empresas 
+de telecomunicaciones o específicamente Google**. Sin embargo aún no tenemos acceso esa información.
 ''')
 
 # 0. se aplicó la primera prueba para distritios adebido a que cada municipalidad dsitrital tiene la facultad de implementar los mercaods itinerantes
@@ -119,7 +120,7 @@ densidad poblacional y la duracion del viaje**. Asi pues, podemos recurrir a mod
 área de la logística. Por ejemplo **el modelo de opmitización de localización de instalaciones** (FLP, por sus siglas 
 en inglés) permite minimizar los costos de transporte al tiempo que considera factores como la demanda. En este caso
 **vamos a minizar la distancia recorrida por las personas hacia los mercados considerando que la cantidad de personas 
-que asistirian a un determinado mercado no sobrepase su aforo.** A modo de prueba de concepto hemos aplicado dicho modelo 
+que asistan a cada mercado no sobrepase su aforo.** A modo de prueba de concepto hemos aplicado dicho modelo 
 en los distritos de San Juan de Lurigancho y Miraflores. 
 ''')
 
@@ -127,10 +128,10 @@ en los distritos de San Juan de Lurigancho y Miraflores.
 
 st.subheader('Preprocesamiento de datos')
 st.write('''
-Primero, se descargaron limites distritales y se dividió el espacio geográfico en hexágonos de ≈0.10km2. Luego se obtuvieron
+Primero, se descargaron límites distritales y se dividió el espacio geográfico en hexágonos de ≈0.10km2. Luego se obtuvieron
 los datos poblacionales en una resolución de 30x30m, estos datos los usamos como un estimado de la cantidad de clientes.
-Despues mediante la ubicación de los parques y lozas deportivas de cada distrito, construimos nuestro conjunto de 
-mercados itinerantes potenciales. Utilizando tanto los mercados actuales, mercados potenciales y los hexagonos se contruyó
+Después mediante la ubicación de los parques y lozas deportivas de cada distrito, construimos nuestro conjunto de 
+mercados itinerantes potenciales. Utilizando tanto los mercados actuales, mercados potenciales y los hexágonos se contruyó
 una **matriz de distancia** que nos indica cuanto se demora una persona caminando para movilizarse de cualquier hexágono 
 a cualquier mercado.
 
@@ -159,7 +160,7 @@ Finalmente el modelo retorna dos resultados:
 st.subheader('Resultados ')
 st.write('''
 En el siguiente mapa podrás visualizar las ubicaciones seleccionadas de los mercados potenciales y 
-la ubicacion de los mercados actuales.
+la ubicación de los mercados actuales.
 ''')
 
 # TODO: Add Miraflores
@@ -221,7 +222,7 @@ fig.update_layout(
         ),
         pitch=0,
         bearing=-50,
-        zoom=13,
+        zoom=11,
         style='carto-positron'
     ),
     margin={"r":0,"t":0,"l":0,"b":0}
@@ -236,8 +237,8 @@ if st.checkbox('Muestra los datos de los potenciales mercados'):
     st.write(address_df)
 
 st.write('''
-Como se puede observar **la localizacion de los mercados itinerantes normalmente se recomienda en zonas 
-alejadas debido a la falta de accesibilidad** que existe hoy en dia en dichas zonas. Por otro lado, **se ha 
+Como se puede observar **la localización de los mercados itinerantes normalmente se recomienda en zonas 
+alejadas debido a la falta de accesibilidad** que existe hoy en día en dichas zonas. Por otro lado, **se ha 
 recomendado colocar un gran número de mercados itinerantes (4 de 11) en el límite suroeste del distrito 
 debido a la alta concentración de personas.**
 ''') 
@@ -246,7 +247,7 @@ debido a la alta concentración de personas.**
 st.write('''
 También es importante mencionar que estos resultados pueden mejorarse con acceso a datos de movilidad de personas
 y la aplicación de un mayor número de restricciones al modelo de optmización para lograr **describir mejor la realidad**.
-Por otro lado, es importantisimo el trabajo de **comunicación y concientización de la población** para que se logren los 
+Por otro lado, es importantísimo el trabajo de **comunicación y concientización de la población** para que se logren los 
 resultados esperados.''')
 
 st.subheader('Pasos a seguir')
