@@ -13,8 +13,8 @@ else:
 px.set_mapbox_access_token(mapbox_token)
 
 @st.cache
-def read_geodata(fp, driver='ESRI Shapefile'):
-    gdf = gpd.read_file(fp, driver)
+def read_geojson(fp):
+    gdf = gpd.read_file(fp, driver='GeoJSON')
     return gdf
 
 st.title('Análisis de ubicación de mercados itinerantes')
@@ -53,13 +53,13 @@ Por ejemplo podemos ver cómo varía la duración del viaje hacia el mercado
 más cercano en el distrito de San Juan de Lurigancho:
 ''')
 
-sjl_hexs = gpd.read_file('inputs/sjl_hex.geojson', driver='GeoJSON')
+sjl_hexs = read_geojson('inputs/sjl_hex.geojson')
 
 fig_durations = px.choropleth_mapbox(
     sjl_hexs.reset_index(), geojson=sjl_hexs.geometry.__geo_interface__, locations='index', 
     color='dur_nn_market_walk',
     color_continuous_scale='magma_r',
-    mapbox_style="streets",
+    mapbox_style="carto-positron",
     zoom=11, 
     center = {
        "lat": sjl_hexs.geometry.unary_union.centroid.y,
@@ -88,7 +88,7 @@ fig_population = px.choropleth_mapbox(
     sjl_hexs.reset_index(), geojson=sjl_hexs.geometry.__geo_interface__, locations='index', 
     color='population_2020',
     color_continuous_scale='viridis',
-    mapbox_style="streets",
+    mapbox_style="carto-positron",
     zoom=11, 
     center = {
        "lat": sjl_hexs.geometry.unary_union.centroid.y,
@@ -172,8 +172,8 @@ la ubicacion de los mercados actuales.
 #     list(fps_options.keys())
 # )
 
-sjl_old_markets_merged = gpd.read_file('inputs/sjl_old_markets_merged.geojson', driver='GeoJSON')
-active_temporal_markets_poly = gpd.read_file('inputs/active_temporal_markets_poly.geojson', driver='GeoJSON')
+sjl_old_markets_merged = read_geojson('inputs/sjl_old_markets_merged.geojson')
+active_temporal_markets_poly = read_geojson('inputs/active_temporal_markets_poly.geojson')
 
 # Mapa
 st.subheader("Mapa de mercados")
@@ -230,9 +230,10 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 # df las direcciones
+address_df = active_temporal_markets_poly[['lat', 'lon', 'address']]
 if st.checkbox('Muestra los datos de los potenciales mercados'):
     st.subheader('Ubicación de potenciales mercados itinerantes ')
-    st.write(active_temporal_markets_poly[['lat', 'lon', 'address']])
+    st.write(address_df)
 
 st.write('''
 Como se puede observar **la localizacion de los mercados itinerantes normalmente se recomienda en zonas 
