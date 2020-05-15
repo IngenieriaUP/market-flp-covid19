@@ -35,8 +35,6 @@ Pero antes de lograr este objetivo debemos hacer algunas preguntas: **¿Cómo de
 ¿De qué depende esta ubicacion? ¿Por qué una ubicacion podría ser mejor que otra? A continuación responderemos estas preguntas.
 ''')
 
-sjl_hexs = gpd.read_file('inputs/sjl_hex.geojson', driver='GeoJSON')
-
 # 1. mejore la accesibilidad a los mercados (medimos con tiempo y distancia de viaje)
 # 2. considerando la distancia social debemos incluir en el analisis de la densidad poblacional en la zona geografica
 st.write('''
@@ -51,9 +49,11 @@ Municipalidad, se llegó a la conclusión de que se debían considerar principal
 
 Esto significa que la situacion ideal sería que 
 **la duración y distancia de viaje caminando hacia el mercado sea la mínima posible.**
-Por ejemplo podemos ver cómo varia la duración del viaje hacia el mercado 
+Por ejemplo podemos ver cómo varía la duración del viaje hacia el mercado 
 más cercano en el distrito de San Juan de Lurigancho:
 ''')
+
+sjl_hexs = gpd.read_file('inputs/sjl_hex.geojson', driver='GeoJSON')
 
 fig_durations = px.choropleth_mapbox(
     sjl_hexs.reset_index(), geojson=sjl_hexs.geometry.__geo_interface__, locations='index', 
@@ -127,7 +127,7 @@ en los distritos de San Juan de Lurigancho y Miraflores.
 
 st.subheader('Preprocesamiento de datos')
 st.write('''
-Primero, se descargaron limites distritales y se dividió el espacio geográfico en hexágonos de 0.10km2. Luego se obtuvieron
+Primero, se descargaron limites distritales y se dividió el espacio geográfico en hexágonos de ≈0.10km2. Luego se obtuvieron
 los datos poblacionales en una resolución de 30x30m, estos datos los usamos como un estimado de la cantidad de clientes.
 Despues mediante la ubicación de los parques y lozas deportivas de cada distrito, construimos nuestro conjunto de 
 mercados itinerantes potenciales. Utilizando tanto los mercados actuales, mercados potenciales y los hexagonos se contruyó
@@ -138,13 +138,13 @@ Con respecto al aforo de los mercados debido que no está reportado en el censo,
 área construida de cada mercado. Este valor sirve para restringir la cantidad de personas que pueden ser 
 asignadas a un mercado. Por otro lado **el modelo necesita que le digamos el número total de mercados 
 itinerantes que se activarán**, para ello la Municipalidad nos indicó que la capacidad logística de los distritos en promedio
-podría alcanzar para implementar **12 mercados itinerantes** en un mes.
+podría alcanzar para implementar **≈11 mercados itinerantes** en un mes.
 
 En resumen se han calculado las siguientes variables que el modelo necesita:
 
 - Matriz de distancia mercado-clientes (filas-columnas)
 - Aforo de cada mercado
-- Número de instalaciones a activar: 12 (según la capacidad logística de cada distrito)
+- Número de instalaciones a activar (según la capacidad logística de cada distrito)
 ''') 
 
 # 3. Procesamiento: que hace el modelo ? minimizar la distacia crespentadfo lazs restrs.
@@ -232,7 +232,7 @@ st.plotly_chart(fig, use_container_width=True)
 # df las direcciones
 if st.checkbox('Muestra los datos de los potenciales mercados'):
     st.subheader('Ubicación de potenciales mercados itinerantes ')
-    st.write(active_temporal_markets_poly[['lat', 'lon', 'address']], use_container_width=True)
+    st.write(active_temporal_markets_poly[['lat', 'lon', 'address']])
 
 st.write('''
 Como se puede observar **la localizacion de los mercados itinerantes normalmente se recomienda en zonas 
