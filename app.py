@@ -5,7 +5,7 @@ import geopandas as gpd
 import plotly.express as px
 import plotly.graph_objects as go
 
-if 'DYNO' in os.environ:
+if 'MAPBOX_TOKEN' in os.environ:
     mapbox_token = os.environ.get('MAPBOX_TOKEN')
 else:
     mapbox_token = open('.mapbox_token').read()
