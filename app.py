@@ -5,13 +5,6 @@ import geopandas as gpd
 import plotly.express as px
 import plotly.graph_objects as go
 
-if 'MAPBOX_TOKEN' in os.environ:
-    mapbox_token = os.environ.get('MAPBOX_TOKEN')
-else:
-    mapbox_token = open('.mapbox_token').read()
-
-px.set_mapbox_access_token(mapbox_token)
-
 @st.cache
 def read_geojson(fp):
     gdf = gpd.read_file(fp, driver='GeoJSON')
