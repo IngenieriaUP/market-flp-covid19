@@ -38,11 +38,11 @@ se llegó a la conclusión de que se debían considerar principalmente las sigui
 - Densidad poblacional alrededor del mercado
 - Aforo del mercado
 - Flujo de personas en el mercado (por hora)
-- Posibles lugares para colocar los mercados itinerantes (Por ejemplo parques y lozas deportivas)
+- Posibles lugares para colocar los mercados itinerantes (Por ejemplo parques y losas deportivas)
 
 Esto significa que la situación ideal sería que 
 **la duración y distancia de viaje caminando hacia el mercado sea la mínima posible.**
-Por ejemplo podemos ver cómo varía la duración del viaje hacia el mercado 
+Por ejemplo podemos ver cómo varía la duración (en minutos) del viaje hacia el mercado 
 más cercano en el distrito de San Juan de Lurigancho:
 ''')
 
@@ -74,7 +74,7 @@ st.plotly_chart(fig_durations, use_container_width=True)
 st.write('''
 Además, **la cantidad de mercados** ubicados en una zona geografica **debería ser acorde a la densidad poblacional.**
 Asimismo, **el flujo de personas** en el mercado debe estar **restringido por el aforo** para 
-que sea posible **mantener la distancia social.** Por ejemplo podemos ver la densidad poblacional dentro del 
+que sea posible **mantener la distancia social.** Por ejemplo podemos ver la densidad poblacional (número de personas) dentro del 
 distrito de San Juan de Lurigancho:
 ''')
 
@@ -114,7 +114,7 @@ densidad poblacional y la duracion del viaje**. Asi pues, podemos recurrir a mod
 en inglés) permite minimizar los costos de transporte al tiempo que considera factores como la demanda. En este caso
 **vamos a minizar la distancia recorrida por las personas hacia los mercados considerando que la cantidad de personas 
 que asistan a cada mercado no sobrepase su aforo.** A modo de prueba de concepto hemos aplicado dicho modelo 
-en los distritos de San Juan de Lurigancho y Miraflores. 
+en el distrito de San Juan de Lurigancho. 
 ''')
 
 # 2. Preprocesaminto: Formato a los datos para el modelo
@@ -123,8 +123,9 @@ st.subheader('Preprocesamiento de datos')
 st.write('''
 Primero, se descargaron límites distritales y se dividió el espacio geográfico en hexágonos de ≈0.10km2. Luego se obtuvieron
 los datos poblacionales en una resolución de 30x30m, estos datos los usamos como un estimado de la cantidad de clientes.
-Después mediante la ubicación de los parques y lozas deportivas de cada distrito, construimos nuestro conjunto de 
-mercados itinerantes potenciales. Utilizando tanto los mercados actuales, mercados potenciales y los hexágonos se contruyó
+Después mediante la ubicación de los parques y losas deportivas de cada distrito, construimos nuestro conjunto de 
+mercados itinerantes potenciales. Asimismo, sólo se consideraron parques y losas con un área que permita tener un aforo
+ de 500 considerando el distanciamiento social necesario. Utilizando tanto los mercados actuales, mercados potenciales y los hexágonos se contruyó
 una **matriz de distancia** que nos indica cuanto se demora una persona caminando para movilizarse de cualquier hexágono 
 a cualquier mercado.
 
@@ -132,7 +133,7 @@ Con respecto al aforo de los mercados debido que no está reportado en el censo,
 área construida de cada mercado. Este valor sirve para restringir la cantidad de personas que pueden ser 
 asignadas a un mercado. Por otro lado **el modelo necesita que le digamos el número total de mercados 
 itinerantes que se activarán**, para ello la Municipalidad nos indicó que la capacidad logística de los distritos en promedio
-podría alcanzar para implementar **≈11 mercados itinerantes** en un mes.
+podría alcanzar para implementar **~11 mercados itinerantes** en un mes.
 
 En resumen se han calculado las siguientes variables que el modelo necesita:
 
@@ -197,7 +198,7 @@ fig.add_trace(
         name='Potenciales mercados itinerantes',
         customdata=active_temporal_markets_poly['address'],
         geojson=active_temporal_markets_poly.geometry.__geo_interface__,
-        locations=active_temporal_markets_poly.index, z=active_temporal_markets_poly.active,
+        locations=active_temporal_markets_poly.index, z=active_temporal_markets_poly.is_active,
         colorscale=[[0, 'rgb(0,255,0)'], [1,'rgb(0,255,0)']],
         showscale=False, 
         showlegend=True,
@@ -230,10 +231,9 @@ if st.checkbox('Muestra los datos de los potenciales mercados'):
     st.write(address_df)
 
 st.write('''
-Como se puede observar **la localización de los mercados itinerantes normalmente se recomienda en zonas 
-alejadas debido a la falta de accesibilidad** que existe hoy en día en dichas zonas. Por otro lado, **se ha 
-recomendado colocar un gran número de mercados itinerantes (4 de 11) en el límite suroeste del distrito 
-debido a la alta concentración de personas.**
+Como se puede observar **se ha recomendado* colocar un gran número de mercados itinerantes (5 de 11) en 
+la zona suroeste del distrito debido a la alta concentración de personas.** Asimismo, los mercados potenciales 
+seleccionados **cubren una zona central en el distrito que no cuenta con mercados cercanos actualmente.**
 ''') 
 
 # Discusión
@@ -261,8 +261,14 @@ Se utilizaron las siguientes fuentes de datos:
 
 - [Peru: High Resolution Population Density Maps + Demographic Estimates](https://data.humdata.org/dataset/peru-high-resolution-population-density-maps-demographic-estimates)
 - [Límites disritales del Servicio Nominatim de Open Street Maps (OSM)](https://nominatim.openstreetmap.org/)
-- [Geolocalización de parques y lozas deportivas de OSM Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API)
+- [Geolocalización de parques y losas deportivas de OSM Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API)
 - [Censo Nacional de Mercados de Abastos 2016 del INEI](https://www.inei.gob.pe/media/MenuRecursivo/publicaciones_digitales/Est/Lib1448/libro.pdf)
+''')
+
+st.write('''
+*La localización de los mercados itinerantes inicialmente se recomiendó en zonas alejadas debido a 
+la falta de accesibilidad pero debido a ciertas limitaciones logística de la municipalidad se filtraron 
+los parques en zonas poco accesibles.
 ''')
 
 st.subheader('Autores')
