@@ -12,7 +12,6 @@ def read_geojson(fp):
 
 st.title('Análisis de ubicación de mercados itinerantes')
 
-
 # Problema de aglomeracion de personas en el mercado, solucion viable es colocas mas mercados (itinerates)
 st.write('''
 Desde el inicio del Estado de Emergencia en nuestro país los mercados han recibido un gran volumen de personas.
@@ -45,7 +44,7 @@ Esto significa que la situación ideal sería que
 En ese sentido para facilitar el análisis de estas variables hemos divido la ciudad en hexágonos de ~0.73km$^2
 $. Por ejemplo en el mapa de Lima mostrado a continuación podemos ver cuántos minutos se demoraría una persona 
 caminando desde el centro de un hexágono hasta el mercado más cercano. Mientras más oscuro sea el color del
-hexágono singifica existe un menor acceso a mercados en esa zona.
+hexágono significa existe un menor acceso a mercados en esa zona.
 ''')
 
 lima_hexs = read_geojson('inputs/lima_hexs.geojson')
