@@ -131,7 +131,7 @@ active_temporal_markets_poly = read_geojson('inputs/active_temporal_markets_poly
 st.subheader("Mapa de mercados")
 
 # Filtra el distrito
-options = ['Todos'] + lima_distritos['distrito'].unique().tolist()
+options = ['Todos'] + sorted(lima_distritos['distrito'].unique().tolist())
 option = st.selectbox('Selecciona el distrito que deseas ver', options)
 
 if option == 'Todos':
