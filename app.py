@@ -312,7 +312,7 @@ Se utilizaron las siguientes fuentes de datos:
 
 st.subheader('Autores')
 st.write('''
-Andrés Regal, Claudio Ortega & Michelle Rodríguez
-Facultad de Ingeniería
+Andrés Regal, Claudio Ortega & Michelle Rodríguez\n
+Facultad de Ingeniería\n
 Universidad del Pacífico
 ''')
