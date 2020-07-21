@@ -4,34 +4,38 @@ import pandas as pd
 import geopandas as gpd
 import plotly.express as px
 import plotly.graph_objects as go
+from PIL import Image
 
 @st.cache
 def read_geojson(fp):
     gdf = gpd.read_file(fp, driver='GeoJSON')
     return gdf
 
+up_logo = Image.open('images/inge-logo.png')
+st.image(up_logo, width=200, format='png')
+
 st.title('Análisis de ubicación de mercados itinerantes')
 
 # Problema de aglomeracion de personas en el mercado, solucion viable es colocas mas mercados (itinerates)
 st.write('''
 Desde el inicio del Estado de Emergencia en nuestro país los mercados han recibido un gran volumen de personas.
-Esto ha generado que se conviertan en uno de los principales focos de contagio de COVID-19 para la población. Por este motivo 
-**la Municipalidad de Lima propuso la implementación de mercados itinerantes para aumentar la oferta de mercados y 
+Esto ha generado que se conviertan en uno de los principales focos de contagio de COVID-19 para la población. Por este motivo
+**la Municipalidad de Lima propuso la implementación de mercados itinerantes para aumentar la oferta de mercados y
 reducir la aglomeración de personas.**
 ''')
 
 # como sabnemos que la ubicacion es opmitima, de que depende donde ubicarlos? por que ubicarlos en un determinado espacio?
 st.write('''
 En este sentido, **el presente análisis tiene como objetivo hallar la localizacion óptima de los mercados itinerantes.**
-Pero antes de lograr este objetivo debemos hacer algunas preguntas: **¿Cómo determinamos si una ubicación es óptima?** 
+Pero antes de lograr este objetivo debemos hacer algunas preguntas: **¿Cómo determinamos si una ubicación es óptima?**
 ¿De qué depende esta ubicación? ¿Por qué una ubicacion podría ser mejor que otra? A continuación responderemos estas preguntas.
 ''')
 
 # 1. mejore la accesibilidad a los mercados (medimos con tiempo y distancia de viaje)
 # 2. considerando la distancia social debemos incluir en el analisis de la densidad poblacional en la zona geografica
 st.write('''
-Luego de realizar un análisis de datos con el equipo multidisciplinario de la Municipalidad Lima y la Universidad del Pacífico 
-se llegó a la conclusión de que se debían considerar principalmente las siguientes variables: 
+Luego de realizar un análisis de datos con el equipo multidisciplinario de la Municipalidad Lima y la Universidad del Pacífico
+se llegó a la conclusión de que se debían considerar principalmente las siguientes variables:
 
 - Accesibilidad del mercado
 - Densidad poblacional alrededor del mercado
@@ -39,10 +43,10 @@ se llegó a la conclusión de que se debían considerar principalmente las sigui
 - Flujo de personas en el mercado (por hora)
 - Posibles lugares para colocar los mercados itinerantes (Por ejemplo parques y losas deportivas)
 
-Esto significa que la situación ideal sería que 
+Esto significa que la situación ideal sería que
 **la duración y distancia de viaje caminando hacia el mercado sea la mínima posible.**
 En ese sentido para facilitar el análisis de estas variables hemos divido la ciudad en hexágonos de ~0.73km$^2
-$. Por ejemplo en el mapa de Lima mostrado a continuación podemos ver cuántos minutos se demoraría una persona 
+$. Por ejemplo en el mapa de Lima mostrado a continuación podemos ver cuántos minutos se demoraría una persona
 caminando desde el centro de un hexágono hasta el mercado más cercano. Mientras más oscuro sea el color del
 hexágono significa existe un menor acceso a mercados en esa zona.
 ''')
@@ -50,12 +54,12 @@ hexágono significa existe un menor acceso a mercados en esa zona.
 lima_hexs = read_geojson('inputs/lima_hexs.geojson')
 
 fig_durations = px.choropleth_mapbox(
-    lima_hexs.reset_index(), geojson=lima_hexs.geometry.__geo_interface__, locations='index', 
+    lima_hexs.reset_index(), geojson=lima_hexs.geometry.__geo_interface__, locations='index',
     color='duration_to_food_facility_bins',
     color_discrete_sequence=px.colors.sequential.Plasma_r,
-    category_orders={'duration_to_food_facility_bins': ['De 0 a 15', 'De 15 a 30', 'De 30 a 45', 'De 45 a 60', 'De 60 a 90', 'De 90 a 120', 'Más de 120']}, 
+    category_orders={'duration_to_food_facility_bins': ['De 0 a 15', 'De 15 a 30', 'De 30 a 45', 'De 45 a 60', 'De 60 a 90', 'De 90 a 120', 'Más de 120']},
     mapbox_style="carto-positron",
-    zoom=9, 
+    zoom=9,
     center = {
        "lat": lima_hexs.geometry.unary_union.centroid.y,
        "lon": lima_hexs.geometry.unary_union.centroid.x
@@ -70,22 +74,22 @@ fig_durations = px.choropleth_mapbox(
     hover_data = ['duration_to_food_facility', 'distance_to_food_facility', 'n_markets']
 )
 fig_durations.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-
+fig_durations.update_traces(marker=dict(line=dict(width=0)))
 st.plotly_chart(fig_durations, use_container_width=True)
 
 st.write('''
 Además, **la cantidad de mercados** ubicados en una zona geográfica **debería ser acorde a la densidad poblacional.**
-Asimismo, **el flujo de personas** en el mercado debe estar **restringido por el aforo** para 
-que sea posible **mantener la distancia social.** En el mapa de abajo podemos ver la cantidad de personas 
+Asimismo, **el flujo de personas** en el mercado debe estar **restringido por el aforo** para
+que sea posible **mantener la distancia social.** En el mapa de abajo podemos ver la cantidad de personas
 por hexágono en la ciudad de Lima y si pasamos nuestro cursor por encima de un hexágono podemos ver el número de mercados dentro:
 ''')
 
 fig_population = px.choropleth_mapbox(
-    lima_hexs.reset_index(), geojson=lima_hexs.geometry.__geo_interface__, locations='index', 
+    lima_hexs.reset_index(), geojson=lima_hexs.geometry.__geo_interface__, locations='index',
     color='population_2020',
     color_continuous_scale='viridis',
     mapbox_style="carto-positron",
-    zoom=9, 
+    zoom=9,
     center = {
        "lat": lima_hexs.geometry.unary_union.centroid.y,
        "lon": lima_hexs.geometry.unary_union.centroid.x
@@ -98,28 +102,29 @@ fig_population = px.choropleth_mapbox(
     hover_data = ['n_markets']
 )
 fig_population.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+fig_population.update_traces(marker=dict(line=dict(width=0)))
 st.plotly_chart(fig_population, use_container_width=True)
 
 # Para solucionar este problema de ubicación se ha usado un Modelo de localización óptima instalaciones
 st.write('''
-Por otro lado **los datos de flujos de personas se podrían obtener a partir de fuentes privadas como empresas 
+Por otro lado **los datos de flujos de personas se podrían obtener a partir de fuentes privadas como empresas
 de telecomunicaciones o específicamente Google**. Sin embargo aún no tenemos acceso esa información.
 ''')
 
 # 0. se aplicó la primera prueba para distritios adebido a que cada municipalidad dsitrital tiene la facultad de implementar los mercaods itinerantes
 st.subheader('Propuesta de solución')
 st.write('''
-Para resolver la pregunta de dónde es la ubicación óptima para los mercados **contamos con la 
-densidad poblacional y la duracion del viaje**. Asi pues, podemos recurrir a modelos de optimización utilizados en el 
-área de la logística. Uno de ellos es **el modelo de optimización de localización de instalaciones** (FLP, por sus siglas 
+Para resolver la pregunta de dónde es la ubicación óptima para los mercados **contamos con la
+densidad poblacional y la duracion del viaje**. Asi pues, podemos recurrir a modelos de optimización utilizados en el
+área de la logística. Uno de ellos es **el modelo de optimización de localización de instalaciones** (FLP, por sus siglas
 en inglés) permite minimizar los costos de transporte al tiempo que considera factores como la demanda. En este caso
-**vamos a minizar la distancia recorrida por las personas hacia los mercados considerando que la cantidad de personas 
+**vamos a minizar la distancia recorrida por las personas hacia los mercados considerando que la cantidad de personas
 que asistan a cada mercado no sobrepase su aforo.**
 ''')
 
 st.subheader('Resultados ')
 st.write('''
-En el siguiente mapa podrás visualizar las ubicaciones seleccionadas de los mercados potenciales y 
+En el siguiente mapa podrás visualizar las ubicaciones seleccionadas de los mercados potenciales y
 la ubicación de los mercados actuales.
 ''')
 
@@ -190,7 +195,7 @@ fig.add_trace(
         geojson=selected_temp_market.geometry.__geo_interface__,
         locations=selected_temp_market.index, z=selected_temp_market.is_active,
         colorscale=[[0, 'rgb(0,255,0)'], [1,'rgb(0,255,0)']],
-        showscale=False, 
+        showscale=False,
         showlegend=True,
         marker_opacity=0.5, marker_line_width=3, marker_line_color='rgb(0,200,0)',
         hovertemplate='Dirección:%{customdata[0]} <br><b>Aforo:%{customdata[1]:.0f} ',
@@ -222,11 +227,11 @@ if st.checkbox('Muestra los datos de los potenciales mercados'):
 
 # Discusión
 st.write('''
-Este mapa puede ser utilizado y evaluado por autoridades municipales para ayudarlos a 
+Este mapa puede ser utilizado y evaluado por autoridades municipales para ayudarlos a
 seleccionar estratégicamente la mejor ubicación de los mercados itinerantes en su distrito.
-Si tomamos el distrito de **San Juan de Lurigancho** como ejemplo, se puede observar que **se ha recomendado colocar 
+Si tomamos el distrito de **San Juan de Lurigancho** como ejemplo, se puede observar que **se ha recomendado colocar
 un gran número de mercados itinerantes en la zona central del distrito debido a la alta concentración de personas.**
-Asimismo, **se recomendó colocar mercados itinerantes en zonas de limitado acceso vial**, para facilitar 
+Asimismo, **se recomendó colocar mercados itinerantes en zonas de limitado acceso vial**, para facilitar
 el acceso a mercados de los vecinos.
 ''')
 
@@ -234,25 +239,25 @@ el acceso a mercados de los vecinos.
 st.write('''
 También es importante mencionar que estos resultados pueden mejorarse con acceso a datos de movilidad de personas
 y la aplicación de un mayor número de restricciones al modelo de optmización para lograr **describir mejor la realidad**.
-Por otro lado, es importantísimo el trabajo de **comunicación y concientización de la población** para que se logren los 
+Por otro lado, es importantísimo el trabajo de **comunicación y concientización de la población** para que se logren los
 resultados esperados.''')
 
 # 2. Preprocesaminto: Formato a los datos para el modelo
 
 st.subheader('¿Cómo logramos estos resultados?')
 st.write('''
-Primero, se descargaron los límites de la ciudad y se dividió el espacio geográfico en hexágonos de ~0.73km$^2$ (como se mencionó 
+Primero, se descargaron los límites de la ciudad y se dividió el espacio geográfico en hexágonos de ~0.73km$^2$ (como se mencionó
 anteriormente para los mapas). Luego se obtuvieron
 los datos poblacionales en una resolución de 30x30m, estos datos los usamos como un estimado de la cantidad de clientes.
-Después mediante la ubicación de los parques y losas deportivas de cada distrito, construimos nuestro conjunto de 
+Después mediante la ubicación de los parques y losas deportivas de cada distrito, construimos nuestro conjunto de
 mercados itinerantes potenciales. Asimismo, sólo se consideraron parques y losas con un área que permita tener un aforo
  de 500 personas considerando el distanciamiento social necesario. Utilizando tanto los mercados actuales, mercados potenciales y los hexágonos se contruyó
-una **matriz de distancia** que nos indica cuánto se demora una persona caminando para movilizarse de cualquier hexágono 
+una **matriz de distancia** que nos indica cuánto se demora una persona caminando para movilizarse de cualquier hexágono
 a cualquier mercado.
 
 Con respecto al aforo de los mercados debido que no está reportado en el censo, lo tuvimos que estimar a partir del
-área construida de cada mercado. Este valor sirve para restringir la cantidad de personas que pueden ser 
-asignadas a un mercado. Por otro lado **el modelo necesita que le digamos el número total de mercados 
+área construida de cada mercado. Este valor sirve para restringir la cantidad de personas que pueden ser
+asignadas a un mercado. Por otro lado **el modelo necesita que le digamos el número total de mercados
 itinerantes que se activarán**, para ello la Municipalidad nos indicó que la capacidad logística de los distritos en promedio
 podría alcanzar para implementar **~12 mercados itinerantes** en un mes, lo que nos da un total de 516 mercados itinerantes para
 toda la ciudad.
@@ -262,13 +267,13 @@ En resumen se han calculado las siguientes variables que el modelo necesita:
 - Matriz de distancia mercado-clientes (filas-columnas)
 - Aforo de cada mercado
 - Número de instalaciones a activar (según la capacidad logística de cada distrito)
-''') 
+''')
 
 # 3. Procesamiento: que hace el modelo ? minimizar la distacia crespentadfo lazs restrs.
 # que podria salir mal? consideraciones
 
 st.write('''
-Una vez concluida la optimización el modelo retorna dos resultados: 
+Una vez concluida la optimización el modelo retorna dos resultados:
 - La ubicación de los nuevos mercados itinerantes que se deben implementar
 - La población que debe ser atendida por los mercados (restringido por el aforo)
 
@@ -307,8 +312,7 @@ Se utilizaron las siguientes fuentes de datos:
 
 st.subheader('Autores')
 st.write('''
-Andrés Regal  
-Claudio Ortega  
+Andrés Regal, Claudio Ortega & Michelle Rodríguez
+Facultad de Ingeniería
 Universidad del Pacífico
 ''')
-
