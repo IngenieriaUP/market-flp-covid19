@@ -20,7 +20,7 @@ defusedxml==0.6.0
 docutils==0.15.2
 entrypoints==0.3
 enum-compat==0.0.3
-Fiona==1.8.13.post1
+Fiona==1.10b2
 geopandas==0.7.0
 gunicorn==20.0.4
 idna==2.9
